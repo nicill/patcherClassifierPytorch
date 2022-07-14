@@ -1,0 +1,25 @@
+# this file contains an example of the input parameters to transform a mosaic or sequence of mosaics into patches 
+#patchsize 
+patchSize 100
+
+# for each mosaic to be considered, include folder prefix, mosaic file name, number of layers and  as well as file names finaly, also include output folder name
+# The first mosaic should contain the maximal set of classes!!!!!!
+mosaic /media/yago/workDrive/Experiments/forests/patcherClassifierPytorch/blueBerry/ b1.jpg 6 blueberry b1layer0.jpg trees b1layer1.jpg yellow b1layer2.jpg soil b1layer3.jpg water b1layer4.jpg deadTree b1layer5.jpg patches
+
+mosaic /media/yago/workDrive/Experiments/forests/patcherClassifierPytorch/blueBerry/ b2.jpg 6 blueberry b2layer0.jpg trees b2layer1.jpg yellow b2layer2.jpg soil b2layer3.jpg water b2layer4.jpg deadTree b2layer5.jpg patches
+
+mosaic /media/yago/workDrive/Experiments/forests/patcherClassifierPytorch/blueBerry/ b3.jpg 6 blueberry b3layer0.jpg trees b3layer1.jpg yellow b3layer2.jpg soil b3layer3.jpg water b3layer4.jpg deadTree b3layer5.jpg patches
+
+# Divide into training and testing, mosaics (indicated by the name of the mosaic file) after the "train" keyword are used (80/20) for training while the others are for testing
+train b1.jpg
+
+#indicate important classes that may be oversampled or weigthed up in the loss function
+important blueberry
+
+#indicate unimportant classes that may be downsampled or weigthed down in the loss function
+unimportant soil
+
+#csv File Names
+csvFileName /media/yago/workDrive/Experiments/forests/patcherClassifierPytorch/blueBerry/blueb.csv
+testFileName /media/yago/workDrive/Experiments/forests/patcherClassifierPytorch/blueBerry/bluebTEST.csv
+
