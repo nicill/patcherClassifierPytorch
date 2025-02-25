@@ -69,7 +69,7 @@ class myFeatureExtractor(BaseModel):
                                        kernel_size=3,
                                        padding=1)
 
-        #now add a feature extractor
+        #now add a feature extractor, CHECK THIS!
         if featEx=="res":
             self.featEx = torchModels.resnet50(pretrained=True)
             num_ftrs = self.featEx.fc.in_features
