@@ -6,8 +6,7 @@ from torch import nn
 import torch.nn.functional as F
 from data_manipulation.models import BaseModel
 from data_manipulation.utils import to_torch_var, time_to_string
-from torchvision import models as torchModels
-from torchvision import transforms
+from torchvision import transforms, models
 
 import cv2
 import sys
@@ -70,41 +69,105 @@ class myFeatureExtractor(BaseModel):
                                        padding=1)
 
         #now add a feature extractor, CHECK THIS!
-        if featEx=="res":
-            self.featEx = torchModels.resnet50(pretrained=True)
+        if featEx == "res":
+            weights = models.ResNet50_Weights.DEFAULT
+            self.featEx = models.resnet50(weights=weights)
+            # change final layer
             num_ftrs = self.featEx.fc.in_features
             self.featEx.fc = nn.Linear(num_ftrs, 2*self.n_outputs)
-        elif featEx=="resBIG":
-            self.featEx = torchModels.resnet152(pretrained=True)
+
+            # used to be 
+            #self.featEx = torchModels.resnet50(pretrained=True)
+            #num_ftrs = self.featEx.fc.in_features
+            #self.featEx.fc = nn.Linear(num_ftrs, 2*self.n_outputs)
+        elif featEx == "resBIG":
+            print("careful, untested")
+            weights = models.ResNet152_Weights.DEFAULT
+            self.featEx = models.resnet152(weights=weights)
             num_ftrs = self.featEx.fc.in_features
             self.featEx.fc = nn.Linear(num_ftrs, 2*self.n_outputs)
+        elif arch == "swimt":
+            weights = models.Swin_T_Weights.DEFAULT
+            self.featEx = models.swin_t(weights=weights)
+            num_ftrs = self.featEx.head.in_features
+            self.featEx.head = nn.Linear(num_ftrs, 2*self.n_outputs
+
+        elif arch == "swims":
+            weights = models.Swin_S_Weights.DEFAULT
+            self.featEx = models.swin_s(weights=weights)
+            num_ftrs = self.featEx.head.in_features
+            self.featEx.head = nn.Linear(num_ftrs, 2*self.n_outputs
+
+        elif arch == "swimb":
+            weights = models.Swin_B_Weights.DEFAULT
+            self.featEx = models.swin_b(weights=weights)
+            # swim B needs smaller batch size because of memory requirements
+            bs = 8
+            num_ftrs = self.featEx.head.in_features
+            self.featEx.head = nn.Linear(num_ftrs, 2*self.n_outputs
+        elif featEx == "vitb16":
+            weights = models.ViT_B_16_Weights.DEFAULT
+            self.featEx = models.vit_b_16(weights=weights)
+            num_ftrs = self.featEx.heads[0].in_features
+            self.featEx.heads[0] = nn.Linear(num_ftrs, 2*self.n_outputs
+        elif featEx == "vitb32":
+            weights = models.ViT_B_32_Weights.DEFAULT
+            self.featEx = models.vit_b_32(weights=weights)
+            num_ftrs = self.featEx.heads[0].in_features
+            self.featEx.heads[0] = nn.Linear(num_ftrs, 2*self.n_outputs
+        elif featEx == "vith14":
+            weights = models.ViT_H_14_Weights.DEFAULT
+            self.featEx = models.vit_h_14(weights=weights)
+            num_ftrs = self.featEx.heads[0].in_features
+            self.featEx.heads[0] = nn.Linear(num_ftrs, 2*self.n_outputs
+        elif featEx == "vitl16":
+            weights = models.ViT_L_16_Weights.DEFAULT
+            self.featEx = models.vit_l_16(weights=weights)
+            num_ftrs = self.featEx.heads[0].in_features
+            self.featEx.heads[0] = nn.Linear(num_ftrs, 2*self.n_outputs
+        elif featEx == "vitl32":
+            weights = models.ViT_L_32_Weights.DEFAULT
+            self.featEx = models.vit_l_32(weights=weights)
+            num_ftrs = self.featEx.heads[0].in_features
+            self.featEx.heads[0] = nn.Linear(num_ftrs, 2*self.n_outputs
+        elif featEx == "convnexts":
+            weights = models.convnext.ConvNeXt_Small_Weights.DEFAULT
+            self.featEx = models.convnext_small(weights=weights)
+            num_ftrs = self.featEx.classifier[-1].in_features
+            self.featEx.classifier[-1] = nn.Linear(num_ftrs, outputNumClasses)
+        elif featEx == "convnextt":
+            weights = models.convnext.ConvNeXt_Tiny_Weights.DEFAULT
+            self.featEx = models.convnext_tiny(weights=weights)
+            num_ftrs = self.featEx.classifier[-1].in_features
+            self.featEx.classifier[-1] = nn.Linear(num_ftrs, outputNumClasses)
+        elif featEx == "convnextb":
+            weights = models.convnext.ConvNeXt_Base_Weights.DEFAULT
+            self.featEx = models.convnext_base(weights=weights)
+            bs = 8
+            num_ftrs = self.featEx.classifier[-1].in_features
+            self.featEx.classifier[-1] = nn.Linear(num_ftrs, outputNumClasses)
+        elif featEx == "convnextl":
+            weights = models.convnext.ConvNeXt_Large_Weights.DEFAULT
+            self.featEx = models.convnext_large(weights=weights)
+            bs = 8
+            num_ftrs = self.featEx.classifier[-1].in_features
+            self.featEx.classifier[-1] = nn.Linear(num_ftrs, outputNumClasses)
         elif featEx=="resnext":
-            self.featEx = torchModels.resnext101_32x8d(pretrained=True)
+            print("careful, untested")
+            weights = models.ResNeXt101_32X8D_Weights.DEFAULT
+            self.featEx = models.resnext101_32x8d(weights=weights)
             num_ftrs = self.featEx.fc.in_features
             self.featEx.fc = nn.Linear(num_ftrs, 2*self.n_outputs)
         elif featEx=="wideresnet":
-            self.featEx = torchModels.wide_resnet101_2(pretrained=True)
+            print("careful, untested")
+            weights = models.Wide_ResNet101_2_Weights.DEFAULT
+            self.featEx = models.wide_resnet101_2(weights=weights)
             num_ftrs = self.featEx.fc.in_features
             self.featEx.fc = nn.Linear(num_ftrs, 2*self.n_outputs)
-        elif featEx=="dense":
-            self.featEx = torchModels.densenet161(pretrained=True)
-            num_ftrs = self.featEx.classifier.in_features
-            self.featEx.classifier = nn.Linear(num_ftrs, 2*self.n_outputs)
-        elif featEx=="vgg":
-            self.featEx = torchModels.vgg19_bn(pretrained=True)
-            num_ftrs = self.featEx.classifier[6].in_features
-            self.featEx.classifier[6] = nn.Linear(num_ftrs, 2*self.n_outputs)
-        elif featEx=="alex":
-            self.featEx = torchModels.alexnet(pretrained=True)
-            num_ftrs = self.featEx.classifier[6].in_features
-            self.featEx.classifier[6] = nn.Linear(num_ftrs, 2*self.n_outputs)
-        elif featEx=="squeeze":
-            self.featEx = torchModels.squeezenet1_0(pretrained=True)
-            self.featEx.classifier[1] = nn.Conv2d(512, 2*self.n_outputs, kernel_size=(1,1), stride=(1,1))
         else: raise Exception("Exception when constructing feature extractor, unknown architecture "+str(featEx))
 
 
-        # for others see https://pytorch.org/tutorials/beginner/finetuning_torchvision_models_tutorial.html
+        # for others see https://pytorch.org/tutorials/intermediate/torchvision_tutorial.html
 
         self.chanT = self.chanT.to(device)
         self.featEx = self.featEx.to(device)
@@ -199,8 +262,8 @@ class myFeatureExtractor(BaseModel):
         for x_ in input_s:
             out.append(self.norm(x_.cpu()))
         out = torch.stack(out)
-        firstOutput=self.featEx(out.to(self.device))[:,:self.n_outputs,...]
-        secondOutput=self.featEx(out.to(self.device))[:,self.n_outputs:,...]
+        firstOutput = self.featEx(out.to(self.device))[:,:self.n_outputs,...]
+        secondOutput = self.featEx(out.to(self.device))[:,self.n_outputs:,...]
         #return torch.softmax(firstOutput,dim=1),torch.sigmoid(secondOutput)
         return torch.sigmoid(firstOutput),torch.sigmoid(secondOutput)
 
